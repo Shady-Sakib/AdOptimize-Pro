@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/head :: common}"></th:block>
+  <title th:text="${status != null ? status + ' — AdOptimize Pro' : 'Error — AdOptimize Pro'}">Error — AdOptimize Pro</title>
+  <style>
+    .error-page { position: relative; z-index: 1; min-height: 100vh; display: grid; place-items: center; padding: 24px; text-align: center; }
+    .error-code { font-family: var(--font-display); font-size: clamp(72px, 16vw, 140px); font-weight: 800; line-height: 1;
+                  background: var(--grad-primary); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .error-title { font-size: 24px; margin: 12px 0 8px; }
+    .error-text { color: var(--text-secondary); max-width: 460px; margin: 0 auto 28px; }
+  </style>
+</head>
+<body>
+  <div th:replace="~{fragments/head :: orbs}"></div>
+  <main class="error-page">
+    <div>
+      <div class="error-code" th:text="${status ?: 'Oops'}">Oops</div>
+      <h1 class="error-title" th:switch="${status}">
+        <span th:case="404">Page not found</span>
+        <span th:case="403">Access denied</span>
+        <span th:case="*">Something went wrong</span>
+      </h1>
+      <p class="error-text" th:switch="${status}">
+        <span th:case="404">The page you're looking for doesn't exist or has moved.</span>
+        <span th:case="403">You don't have permission to view this page.</span>
+        <span th:case="*">An unexpected error occurred. Please try again in a moment.</span>
+      </p>
+      <a class="btn btn-primary btn-lg" th:href="@{/}">← Back to AdOptimize Pro</a>
+    </div>
+  </main>
+</body>
+</html>

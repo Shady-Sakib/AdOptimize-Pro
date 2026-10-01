@@ -1,0 +1,48 @@
+/* =====================================================================
+   Admin sign-in portal accents
+   ===================================================================== */
+
+.admin-auth-left .auth-headline span { background: var(--grad-danger); -webkit-background-clip: text; background-clip: text; }
+.admin-brand-logo { background: var(--grad-danger); }
+
+.admin-access-badge {
+  display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; margin-bottom: 20px;
+  padding: 6px 14px; border-radius: var(--radius-full); font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em;
+  color: #fb7185; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3);
+}
+.admin-feature-icon { background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.25); }
+.admin-stat-val { color: #fb7185; }
+.admin-floating-card { border-color: rgba(244, 63, 94, 0.25); }
+
+.admin-security-header {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 20px;
+  border-radius: var(--radius-md); background: rgba(244, 63, 94, 0.06); border: 1px solid rgba(244, 63, 94, 0.2);
+}
+.security-shield { font-size: 22px; }
+.security-text { flex: 1; }
+.security-title { font-weight: 600; font-size: 14px; }
+.security-sub { font-size: 12px; color: var(--text-muted); }
+.security-indicator { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--success); }
+.security-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 4px rgba(34, 211, 165, 0.15); }
+
+.admin-tab-btn.active, .admin-submit-btn { background: var(--grad-danger); }
+
+.required-badge {
+  margin-left: 6px; padding: 1px 7px; border-radius: var(--radius-full); font-size: 10.5px; font-weight: 600;
+  color: #fb7185; background: rgba(244, 63, 94, 0.12);
+}
+.group-code-input { letter-spacing: 0.04em; }
+.group-code-hint { display: flex; gap: 6px; align-items: flex-start; margin-top: 6px; font-size: 12px; color: var(--text-muted); }
+.hint-icon { flex-shrink: 0; }
+
+.admin-demo-hint { background: rgba(244, 63, 94, 0.06); border-color: rgba(244, 63, 94, 0.2); }
+.admin-demo-hint a { color: #fb7185; }
+
+.admin-back-link { margin-top: 24px; text-align: center; font-size: 13.5px; }
+.admin-back-link a { color: var(--text-secondary); }
+
+.input-error { animation: shake 300ms ease; }
+@keyframes shake {
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}

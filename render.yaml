@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: adoptimize-pro
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: DB_URL
+        sync: false          # jdbc:mysql://<tidb-host>:4000/<db>?sslMode=VERIFY_IDENTITY&...
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: ADMIN_GROUP_CODE
+        sync: false          # choose a strong secret; do not keep the default
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: THYMELEAF_CACHE
+        value: "true"
+      - key: DB_POOL_SIZE
+        value: "5"

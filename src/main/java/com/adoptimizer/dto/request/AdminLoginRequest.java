@@ -1,0 +1,15 @@
+package com.adoptimizer.dto.request;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class AdminLoginRequest extends LoginRequest {
+
+    @NotBlank(message = "Enter the group code")
+    @Size(max = 50, message = "Group code must be at most 50 characters")
+    private String groupCode;
+}

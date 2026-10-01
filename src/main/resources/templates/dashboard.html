@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/head :: common}"></th:block>
+  <title>Dashboard — AdOptimize Pro</title>
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+  <div th:replace="~{fragments/head :: orbs}"></div>
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" aria-hidden="true">🚀</div>
+        <span class="sidebar-brand">AdOptimize Pro</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <button class="nav-item active" data-section="overview" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">📊</span><span class="nav-label">Overview</span>
+        </button>
+        <button class="nav-item" data-section="campaigns">
+          <span class="nav-icon" aria-hidden="true">📢</span><span class="nav-label">Campaigns</span>
+        </button>
+        <div class="nav-section-label">Tools</div>
+        <button class="nav-item" data-section="optimizer">
+          <span class="nav-icon" aria-hidden="true">💡</span><span class="nav-label">Optimizer</span>
+        </button>
+        <button class="nav-item" data-section="budget">
+          <span class="nav-icon" aria-hidden="true">💰</span><span class="nav-label">Budget</span>
+        </button>
+        <button class="nav-item" data-section="payments">
+          <span class="nav-icon" aria-hidden="true">💳</span><span class="nav-label">Payments</span>
+        </button>
+        <div class="nav-section-label">Account</div>
+        <button class="nav-item" data-section="notifications">
+          <span class="nav-icon" aria-hidden="true">🔔</span><span class="nav-label">Notifications</span>
+          <span class="nav-badge hidden" id="notifNavBadge">0</span>
+        </button>
+        <button class="nav-item" data-section="profile">
+          <span class="nav-icon" aria-hidden="true">👤</span><span class="nav-label">Profile</span>
+        </button>
+        <button class="nav-item" data-section="support">
+          <span class="nav-icon" aria-hidden="true">🎫</span><span class="nav-label">Support</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-mini">
+          <div class="user-avatar" id="sidebarAvatar" th:text="${currentUser.initial}">A</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebarName" th:text="${currentUser.name}">Advertiser</div>
+            <div class="user-email" id="sidebarEmail" th:text="${currentUser.email}">email</div>
+          </div>
+          <button type="button" data-action="logout" title="Sign out" aria-label="Sign out"
+                  style="background:none;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;padding:4px;">⏏</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title" id="topbarTitle">Overview</h1>
+          <div class="topbar-breadcrumb" id="topbarBreadcrumb">Home › Overview</div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" data-section="notifications" aria-label="Notifications">🔔<span class="notif-dot hidden" id="notifDot"></span></button>
+          <button class="topbar-btn" data-section="profile" aria-label="Profile settings">⚙️</button>
+          <button class="btn btn-sm btn-primary" data-action="new-campaign">+ <span class="btn-label">New Campaign</span></button>
+          <button class="btn btn-sm btn-danger" data-action="logout" title="Sign out">⏏ <span class="btn-label">Sign Out</span></button>
+        </div>
+      </header>
+
+      <!-- ═════════════ OVERVIEW ═════════════ -->
+      <section class="page-section" id="section-overview">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Dashboard Overview</h2>
+            <p class="section-sub">Your advertising performance at a glance</p>
+          </div>
+          <select class="form-control" id="overviewPeriod" style="width:auto;padding:8px 14px;" aria-label="Select time period">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+        </div>
+        <div class="stats-grid" id="overviewStats" role="group" aria-label="Key performance indicators">
+          <div class="loading-state" style="grid-column:1/-1">Loading your performance…</div>
+        </div>
+        <div class="grid-2" style="margin-bottom:var(--space-xl);">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Impressions &amp; Clicks</h3>
+              <span class="badge badge-primary" id="trendBadge">Daily</span>
+            </div>
+            <div class="chart-container" style="height:240px;">
+              <canvas id="mainLineChart" role="img" aria-label="Impressions and clicks over time"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Campaign Status</h3>
+              <span class="badge badge-muted" id="walletBadge">—</span>
+            </div>
+            <div class="chart-container" style="height:240px;">
+              <canvas id="statusDonut" role="img" aria-label="Campaigns by status"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recent Campaigns</h3>
+            <button class="btn btn-ghost btn-sm" data-section="campaigns">View All</button>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table" aria-label="Recent campaigns">
+              <thead>
+                <tr><th>Campaign</th><th>Status</th><th>Impressions</th><th>Clicks</th><th>CTR</th><th>Spent</th><th>Budget</th></tr>
+              </thead>
+              <tbody id="recentCampaignBody">
+                <tr><td colspan="7" class="text-center text-muted" style="padding:32px;">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════════ CAMPAIGNS ═════════════ -->
+      <section class="page-section hidden" id="section-campaigns">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">My Campaigns</h2>
+            <p class="section-sub">Create, schedule and manage your advertising campaigns</p>
+          </div>
+          <div class="flex gap-sm">
+            <select class="form-control" id="campaignFilter" style="width:auto;padding:8px 14px;" aria-label="Filter campaigns">
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="pending">Pending review</option>
+              <option value="paused">Paused</option>
+              <option value="completed">Completed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <button class="btn btn-primary" data-action="new-campaign">+ New Campaign</button>
+          </div>
+        </div>
+        <div id="campaignsGrid" class="grid-2"></div>
+      </section>
+
+      <!-- ═════════════ OPTIMIZER ═════════════ -->
+      <section class="page-section hidden" id="section-optimizer">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Campaign Optimizer 💡</h2>
+            <p class="section-sub">Data-driven suggestions based on your campaign analytics and audience benchmarks</p>
+          </div>
+          <select class="form-control" id="optimizerCampaignSelect" style="width:auto;min-width:240px;padding:8px 14px;" aria-label="Select campaign to optimize"></select>
+        </div>
+        <div class="card" id="performanceScore" style="margin-bottom:var(--space-xl);"></div>
+        <div id="suggestionsContainer"></div>
+      </section>
+
+      <!-- ═════════════ BUDGET ═════════════ -->
+      <section class="page-section hidden" id="section-budget">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Budget Management</h2>
+            <p class="section-sub">Monitor and control your advertising spend</p>
+          </div>
+          <button class="btn btn-primary" data-section="payments">+ Add Funds</button>
+        </div>
+        <div id="budgetContent"></div>
+      </section>
+
+      <!-- ═════════════ PAYMENTS ═════════════ -->
+      <section class="page-section hidden" id="section-payments">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Payment Center</h2>
+            <p class="section-sub">Add funds to your advertising account</p>
+          </div>
+        </div>
+        <div class="wallet-strip" id="walletStrip"></div>
+        <div class="grid-2" style="align-items:start;">
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">💳 Add Funds</h3>
+            <div class="payment-card-preview" aria-hidden="true">
+              <div class="card-chip"></div>
+              <div class="card-number-preview" id="cardNumPreview">•••• •••• •••• ••••</div>
+              <div class="card-details-preview">
+                <div><div style="font-size:10px;opacity:0.6;">CARD HOLDER</div><div id="cardHolderPreview">YOUR NAME</div></div>
+                <div style="text-align:right;"><div style="font-size:10px;opacity:0.6;">EXPIRES</div><div id="cardExpiryPreview">MM/YY</div></div>
+              </div>
+            </div>
+            <form id="paymentForm" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="cardHolder">Cardholder Name</label>
+                <input class="form-control" type="text" id="cardHolder" data-field="cardHolder" placeholder="Jane Smith" maxlength="60" autocomplete="cc-name">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cardNumber">Card Number</label>
+                <input class="form-control" type="text" id="cardNumber" data-field="cardNumber" placeholder="4242 4242 4242 4242" maxlength="23" inputmode="numeric" autocomplete="cc-number">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="cardExpiry">Expiry Date</label>
+                  <input class="form-control" type="text" id="cardExpiry" data-field="expiry" placeholder="MM/YY" maxlength="5" inputmode="numeric" autocomplete="cc-exp">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cardCVV">CVV</label>
+                  <input class="form-control" type="password" id="cardCVV" data-field="cvv" placeholder="123" maxlength="4" inputmode="numeric" autocomplete="cc-csc">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="payAmount">Amount to Add ($10 – $50,000)</label>
+                <div class="input-with-icon">
+                  <span class="input-icon" aria-hidden="true">$</span>
+                  <input class="form-control" type="number" id="payAmount" data-field="amount" placeholder="0.00" min="10" max="50000" step="0.01">
+                </div>
+              </div>
+              <div class="flex gap-sm" style="margin-bottom:var(--space-md);flex-wrap:wrap;">
+                <button type="button" class="btn btn-ghost btn-sm" data-amount="100">$100</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-amount="250">$250</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-amount="500">$500</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-amount="1000">$1,000</button>
+              </div>
+              <button type="submit" class="btn btn-primary w-full btn-lg" id="paySubmitBtn">🔒 Process Payment</button>
+              <p class="text-sm text-muted text-center" style="margin-top:var(--space-sm);">
+                Simulated payment for demonstration. The card is validated, but only the brand and last 4 digits are stored.
+              </p>
+            </form>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">Transaction History</h3></div>
+            <div id="transactionList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════════ NOTIFICATIONS ═════════════ -->
+      <section class="page-section hidden" id="section-notifications">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Notifications</h2>
+            <p class="section-sub">Stay updated on approvals, budgets and support replies</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="markAllReadBtn">Mark All Read</button>
+        </div>
+        <div class="card" style="padding:0;"><div id="notificationList"></div></div>
+      </section>
+
+      <!-- ═════════════ PROFILE ═════════════ -->
+      <section class="page-section hidden" id="section-profile">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Profile Settings</h2>
+            <p class="section-sub">Manage your personal information and security</p>
+          </div>
+        </div>
+        <div class="grid-2" style="align-items:start;">
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">👤 Personal Information</h3>
+            <form id="profileForm" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="prof-name">Full Name</label>
+                <input class="form-control" type="text" id="prof-name" data-field="name" maxlength="60" autocomplete="name" th:value="${currentUser.name}">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prof-email">Email Address</label>
+                <input class="form-control" type="email" id="prof-email" data-field="email" maxlength="120" autocomplete="email" th:value="${currentUser.email}">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prof-company">Company Name</label>
+                <input class="form-control" type="text" id="prof-company" data-field="company" maxlength="100" autocomplete="organization" th:value="${currentUser.company}">
+              </div>
+              <button type="submit" class="btn btn-primary" id="profileSubmitBtn">Save Changes</button>
+            </form>
+          </div>
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">🔐 Change Password</h3>
+            <form id="passwordForm" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="cur-pass">Current Password</label>
+                <input class="form-control" type="password" id="cur-pass" data-field="currentPassword" placeholder="Current password" maxlength="72" autocomplete="current-password">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="new-pass">New Password</label>
+                <input class="form-control" type="password" id="new-pass" data-field="newPassword" placeholder="6+ characters, a letter and a number" maxlength="72" autocomplete="new-password">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="conf-pass">Confirm New Password</label>
+                <input class="form-control" type="password" id="conf-pass" data-field="confirmPassword" placeholder="Repeat new password" maxlength="72" autocomplete="new-password">
+              </div>
+              <button type="submit" class="btn btn-primary" id="passwordSubmitBtn">Update Password</button>
+            </form>
+            <hr class="divider">
+            <h3 class="card-title" style="margin-bottom:var(--space-md);">⚡ Account Stats</h3>
+            <div id="profileStats"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════════ SUPPORT ═════════════ -->
+      <section class="page-section hidden" id="section-support">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Support &amp; Feedback</h2>
+            <p class="section-sub">Submit a request or track your support tickets</p>
+          </div>
+        </div>
+        <div class="grid-2" style="align-items:start;">
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:var(--space-lg);">🎫 New Support Ticket</h3>
+            <form id="supportForm" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="ticketSubject">Subject</label>
+                <input class="form-control" type="text" id="ticketSubject" data-field="subject" placeholder="Briefly describe your issue" maxlength="120">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ticketPriority">Priority</label>
+                <select class="form-control" id="ticketPriority" data-field="priority">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ticketMessage">Message</label>
+                <textarea class="form-control" id="ticketMessage" data-field="message" rows="5" maxlength="2000" placeholder="Describe your issue in detail…"></textarea>
+                <div class="form-hint"><span id="ticketCount">0</span> / 2000</div>
+              </div>
+              <button type="submit" class="btn btn-primary" id="ticketSubmitBtn">Submit Ticket</button>
+            </form>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">My Tickets</h3></div>
+            <div id="myTicketsList"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ═════════════ CAMPAIGN CREATE / EDIT MODAL ═════════════ -->
+  <div class="modal-overlay hidden" id="campaignModal" role="dialog" aria-modal="true" aria-labelledby="campaignModalTitle">
+    <div class="modal" style="max-width:660px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="campaignModalTitle">Create Campaign</h2>
+        <button class="modal-close" type="button" data-close-modal="campaignModal" aria-label="Close">✕</button>
+      </div>
+      <div class="campaign-notice warning hidden" id="campaignEditNotice"></div>
+      <form id="campaignForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="camp-title">Campaign Title *</label>
+          <input class="form-control" type="text" id="camp-title" data-field="title" placeholder="e.g. Summer Sale 2026" maxlength="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="camp-desc">Description *</label>
+          <textarea class="form-control" id="camp-desc" data-field="description" rows="3" maxlength="1000" placeholder="Describe your campaign goals and offer…"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="camp-audience">Target Audience *</label>
+            <select class="form-control" id="camp-audience" data-field="audience">
+              <option value="">Select audience</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="camp-type">Ad Format *</label>
+            <select class="form-control" id="camp-type" data-field="adType"></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="camp-budget">Total Budget ($) *</label>
+            <input class="form-control" type="number" id="camp-budget" data-field="budget" placeholder="500" min="1" step="0.01">
+            <div class="form-hint" id="budgetHint">Checking available funds…</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="camp-daily">Daily Budget ($)</label>
+            <input class="form-control" type="number" id="camp-daily" data-field="dailyBudget" placeholder="Auto" min="5" step="0.01">
+            <div class="form-hint">Leave empty to spread the budget evenly.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="camp-start">Start Date *</label>
+            <input class="form-control" type="date" id="camp-start" data-field="startDate">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="camp-end">End Date *</label>
+            <input class="form-control" type="date" id="camp-end" data-field="endDate">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="camp-keywords">Keywords</label>
+          <input class="form-control" type="text" id="camp-keywords" data-field="keywords" maxlength="700" placeholder="fashion, summer, sale (comma-separated, up to 20)">
+        </div>
+        <div class="flex gap-sm" style="justify-content:flex-end;margin-top:var(--space-lg);">
+          <button type="button" class="btn btn-ghost" data-close-modal="campaignModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="campaignSubmitBtn">🚀 Submit for Review</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═════════════ CAMPAIGN DETAIL MODAL ═════════════ -->
+  <div class="modal-overlay hidden" id="campaignDetailModal" role="dialog" aria-modal="true" aria-labelledby="campaignDetailTitle">
+    <div class="modal" style="max-width:760px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="campaignDetailTitle">Campaign</h2>
+        <button class="modal-close" type="button" data-close-modal="campaignDetailModal" aria-label="Close">✕</button>
+      </div>
+      <div id="campaignDetailBody"></div>
+    </div>
+  </div>
+
+  <script th:src="@{/js/common.js}"></script>
+  <script th:src="@{/js/charts.js}"></script>
+  <script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

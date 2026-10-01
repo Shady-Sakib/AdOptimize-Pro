@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/head :: common}"></th:block>
+  <title>Admin Portal — AdOptimize Pro</title>
+  <meta name="description" content="Secure administrator access for AdOptimize Pro.">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+  <link rel="stylesheet" th:href="@{/css/admin-login.css}">
+</head>
+<body>
+  <div th:replace="~{fragments/head :: orbs}"></div>
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <main class="auth-page" style="position:relative;z-index:1;">
+    <!-- LEFT PANEL — Admin branding -->
+    <section class="auth-left admin-auth-left" aria-label="Admin portal overview">
+      <div class="auth-brand">
+        <div class="brand-logo admin-brand-logo" aria-hidden="true">🛡️</div>
+        <span class="brand-name">AdOptimize Pro</span>
+      </div>
+      <div class="admin-access-badge">
+        <span class="admin-access-icon" aria-hidden="true">🔐</span>
+        <span>ADMINISTRATOR ACCESS</span>
+      </div>
+      <h1 class="auth-headline">Admin<br><span>Control Center</span></h1>
+      <p class="auth-desc">
+        Secure access point for platform administrators. Manage users, approve campaigns, monitor revenue, and configure system settings.
+      </p>
+      <div class="auth-features" role="list">
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon admin-feature-icon" aria-hidden="true">👥</div>
+          <span>Full user management &amp; account control</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon admin-feature-icon" aria-hidden="true">📢</div>
+          <span>Campaign approval &amp; content moderation</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon admin-feature-icon" aria-hidden="true">💰</div>
+          <span>Revenue tracking &amp; financial reports</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon admin-feature-icon" aria-hidden="true">⚙️</div>
+          <span>System settings &amp; optimization config</span>
+        </div>
+      </div>
+      <div class="auth-stats">
+        <div><div class="auth-stat-val admin-stat-val">🛡️</div><div class="auth-stat-lbl">Role-based access</div></div>
+        <div><div class="auth-stat-val admin-stat-val">CSRF</div><div class="auth-stat-lbl">Protected</div></div>
+        <div><div class="auth-stat-val admin-stat-val">BCrypt</div><div class="auth-stat-lbl">Hashed passwords</div></div>
+      </div>
+      <div class="floating-cards" aria-hidden="true">
+        <div class="floating-card admin-floating-card">
+          <div class="floating-card-label">System Status</div>
+          <div class="floating-card-value" style="color:#22d3a5;">● Online</div>
+          <div class="floating-card-change">All systems operational</div>
+        </div>
+        <div class="floating-card admin-floating-card">
+          <div class="floating-card-label">Security Level</div>
+          <div class="floating-card-value">Maximum</div>
+          <div class="floating-card-change">🔒 Group code required</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL — Admin auth forms -->
+    <section class="auth-right admin-auth-right" aria-label="Admin authentication">
+      <div class="auth-form-wrap">
+        <div class="auth-notice" th:if="${param.logout != null}">👋 You have been signed out of the admin panel.</div>
+        <div class="auth-notice warning" th:if="${param.deactivated != null}">⚠️ This account has been deactivated.</div>
+
+        <div class="admin-security-header">
+          <div class="security-shield" aria-hidden="true">🛡️</div>
+          <div class="security-text">
+            <div class="security-title">Secured Portal</div>
+            <div class="security-sub">Group code verification required</div>
+          </div>
+          <div class="security-indicator">
+            <span class="security-dot"></span>
+            <span class="security-label">Protected</span>
+          </div>
+        </div>
+
+        <div class="auth-tab-toggle admin-tab-toggle" role="tablist">
+          <button type="button" class="auth-tab-btn admin-tab-btn active" id="tab-admin-login" role="tab" aria-selected="true" aria-controls="form-admin-login" data-tab="login">Admin Sign In</button>
+          <button type="button" class="auth-tab-btn admin-tab-btn" id="tab-admin-register" role="tab" aria-selected="false" aria-controls="form-admin-register" data-tab="register">Create Admin</button>
+        </div>
+
+        <!-- ADMIN LOGIN FORM -->
+        <div id="form-admin-login" role="tabpanel" aria-labelledby="tab-admin-login">
+          <h2 class="auth-form-title">Admin Sign In 🛡️</h2>
+          <p class="auth-form-sub">Enter your credentials and group code to access the admin panel</p>
+          <form class="auth-form" id="adminLoginForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="admin-login-email">Email Address</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">✉️</span>
+                <input class="form-control" type="email" id="admin-login-email" data-field="email" placeholder="admin@company.com" autocomplete="email" maxlength="120" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-login-password">Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔒</span>
+                <input class="form-control" type="password" id="admin-login-password" data-field="password" placeholder="Your admin password" autocomplete="current-password" maxlength="72" required>
+                <button type="button" class="toggle-password" aria-label="Show password">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-login-groupcode">Group Code <span class="required-badge">Required</span></label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔑</span>
+                <input class="form-control group-code-input" type="text" id="admin-login-groupcode" data-field="groupCode" placeholder="Enter your group code" autocomplete="off" maxlength="50" required>
+              </div>
+              <div class="group-code-hint">
+                <span class="hint-icon" aria-hidden="true">ℹ️</span>
+                <span>Contact your system administrator for the group access code</span>
+              </div>
+            </div>
+            <button type="submit" class="auth-submit-btn admin-submit-btn" id="adminLoginSubmitBtn">
+              <span class="btn-icon" aria-hidden="true">🛡️</span> Sign In to Admin Panel →
+            </button>
+          </form>
+          <div class="demo-hint admin-demo-hint" th:if="${demoMode}">
+            <p>🧪 Demo Admin: <strong>admin@adpro.com</strong> / <strong>admin123</strong></p>
+            <p style="margin-top:4px;">🔑 Group Code: <strong th:text="${demoGroupCode}">group 5</strong></p>
+            <p style="margin-top:8px;"><a href="#" id="fillAdminDemo" th:attr="data-group-code=${demoGroupCode}">Auto-fill Demo Credentials</a></p>
+          </div>
+        </div>
+
+        <!-- ADMIN REGISTER FORM -->
+        <div id="form-admin-register" class="hidden" role="tabpanel" aria-labelledby="tab-admin-register">
+          <h2 class="auth-form-title">Create Admin 🔐</h2>
+          <p class="auth-form-sub">Register a new administrator account with group authorization</p>
+          <form class="auth-form" id="adminRegisterForm" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="admin-reg-name">Full Name</label>
+                <div class="input-with-icon">
+                  <span class="input-icon" aria-hidden="true">👤</span>
+                  <input class="form-control" type="text" id="admin-reg-name" data-field="name" placeholder="Admin Name" autocomplete="name" maxlength="60" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="admin-reg-company">Department</label>
+                <div class="input-with-icon">
+                  <span class="input-icon" aria-hidden="true">🏢</span>
+                  <input class="form-control" type="text" id="admin-reg-company" data-field="company" placeholder="e.g. Operations" autocomplete="organization" maxlength="100">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-reg-email">Email Address</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">✉️</span>
+                <input class="form-control" type="email" id="admin-reg-email" data-field="email" placeholder="admin@company.com" autocomplete="email" maxlength="120" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-reg-password">Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔒</span>
+                <input class="form-control" type="password" id="admin-reg-password" data-field="password" placeholder="6+ characters, a letter and a number" autocomplete="new-password" maxlength="72" required>
+                <button type="button" class="toggle-password" aria-label="Show password">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-reg-confirm">Confirm Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔑</span>
+                <input class="form-control" type="password" id="admin-reg-confirm" data-field="confirmPassword" placeholder="Repeat password" autocomplete="new-password" maxlength="72" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-reg-groupcode">Group Code <span class="required-badge">Required</span></label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔑</span>
+                <input class="form-control group-code-input" type="text" id="admin-reg-groupcode" data-field="groupCode" placeholder="Enter your group code" autocomplete="off" maxlength="50" required>
+              </div>
+              <div class="group-code-hint">
+                <span class="hint-icon" aria-hidden="true">⚠️</span>
+                <span>A valid group code is required to create an admin account</span>
+              </div>
+            </div>
+            <button type="submit" class="auth-submit-btn admin-submit-btn" id="adminRegisterSubmitBtn">
+              <span class="btn-icon" aria-hidden="true">🔐</span> Create Admin Account →
+            </button>
+          </form>
+        </div>
+
+        <div class="admin-back-link">
+          <a th:href="@{/}">← Back to Advertiser Login</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script th:src="@{/js/common.js}"></script>
+  <script th:src="@{/js/auth.js}"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/head :: common}"></th:block>
+  <title>AdOptimize Pro — Smart Advertising Platform</title>
+  <meta name="description" content="Create, manage, and optimize your advertising campaigns with data-driven insights. Reach your target audience and maximize ROI with AdOptimize Pro.">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+  <div th:replace="~{fragments/head :: orbs}"></div>
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <main class="auth-page" style="position:relative;z-index:1;">
+    <!-- LEFT PANEL -->
+    <section class="auth-left" aria-label="Platform overview">
+      <div class="auth-brand">
+        <div class="brand-logo" aria-hidden="true">🚀</div>
+        <span class="brand-name">AdOptimize Pro</span>
+      </div>
+      <h1 class="auth-headline">Supercharge Your<br><span>Ad Campaigns</span></h1>
+      <p class="auth-desc">
+        Use campaign analytics and optimization insights to improve your advertising, maximize ROI, and reach the right audience at the perfect moment.
+      </p>
+      <div class="auth-features" role="list">
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon" aria-hidden="true">🎯</div>
+          <span>Precision audience targeting with real-time optimization</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon" aria-hidden="true">📊</div>
+          <span>Live analytics dashboard with actionable insights</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon" aria-hidden="true">💡</div>
+          <span>Keyword, ad format &amp; schedule recommendations</span>
+        </div>
+        <div class="auth-feature" role="listitem">
+          <div class="auth-feature-icon" aria-hidden="true">🔒</div>
+          <span>Secure payments &amp; complete budget control</span>
+        </div>
+      </div>
+      <div class="auth-stats" role="group" aria-label="Platform statistics">
+        <div><div class="auth-stat-val">10K+</div><div class="auth-stat-lbl">Advertisers</div></div>
+        <div><div class="auth-stat-val">2.4B</div><div class="auth-stat-lbl">Ad Impressions</div></div>
+        <div><div class="auth-stat-val">94%</div><div class="auth-stat-lbl">Client Satisfaction</div></div>
+      </div>
+      <div class="floating-cards" aria-hidden="true">
+        <div class="floating-card">
+          <div class="floating-card-label">Campaign CTR</div>
+          <div class="floating-card-value">4.8%</div>
+          <div class="floating-card-change">↑ +1.2% this week</div>
+        </div>
+        <div class="floating-card">
+          <div class="floating-card-label">Monthly Revenue</div>
+          <div class="floating-card-value">$48.2K</div>
+          <div class="floating-card-change">↑ +18% vs last month</div>
+        </div>
+        <div class="floating-card">
+          <div class="floating-card-label">Active Campaigns</div>
+          <div class="floating-card-value">1,284</div>
+          <div class="floating-card-change">↑ 43 new today</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <section class="auth-right" aria-label="Authentication">
+      <div class="auth-form-wrap">
+        <div class="auth-notice" th:if="${param.logout != null}">👋 You have been signed out.</div>
+        <div class="auth-notice warning" th:if="${param.deactivated != null}">⚠️ Your account has been deactivated. Contact support for help.</div>
+
+        <div class="auth-tab-toggle" role="tablist">
+          <button type="button" class="auth-tab-btn active" id="tab-login" role="tab" aria-selected="true" aria-controls="form-login" data-tab="login">Sign In</button>
+          <button type="button" class="auth-tab-btn" id="tab-register" role="tab" aria-selected="false" aria-controls="form-register" data-tab="register">Create Account</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="form-login" role="tabpanel" aria-labelledby="tab-login">
+          <h2 class="auth-form-title">Welcome back 👋</h2>
+          <p class="auth-form-sub">Sign in to manage your ad campaigns</p>
+          <form class="auth-form" id="loginForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="login-email">Email Address</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">✉️</span>
+                <input class="form-control" type="email" id="login-email" data-field="email" placeholder="you@company.com" autocomplete="email" maxlength="120" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="login-password">Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔒</span>
+                <input class="form-control" type="password" id="login-password" data-field="password" placeholder="Your password" autocomplete="current-password" maxlength="72" required>
+                <button type="button" class="toggle-password" aria-label="Show password">👁</button>
+              </div>
+            </div>
+            <button type="submit" class="auth-submit-btn" id="loginSubmitBtn">Sign In →</button>
+          </form>
+          <div class="demo-hint" th:if="${demoMode}">
+            <p>🧪 Demo Advertiser: <strong>demo@adpro.com</strong> / <strong>demo123</strong></p>
+            <p style="margin-top:8px;"><a href="#" id="fillDemo">Auto-fill Demo Credentials</a></p>
+          </div>
+          <div class="demo-hint" style="margin-top:12px; background:rgba(244,63,94,0.06); border-color:rgba(244,63,94,0.2);">
+            <p>🛡️ Are you an administrator?</p>
+            <p style="margin-top:6px;"><a th:href="@{/admin/login}" style="color:#f43f5e; font-weight:600;">Go to Admin Portal →</a></p>
+          </div>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="form-register" class="hidden" role="tabpanel" aria-labelledby="tab-register">
+          <h2 class="auth-form-title">Get started free 🎉</h2>
+          <p class="auth-form-sub">Create your advertiser account</p>
+          <form class="auth-form" id="registerForm" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="reg-name">Full Name</label>
+                <div class="input-with-icon">
+                  <span class="input-icon" aria-hidden="true">👤</span>
+                  <input class="form-control" type="text" id="reg-name" data-field="name" placeholder="Jane Smith" autocomplete="name" maxlength="60" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-company">Company <span class="text-muted">(optional)</span></label>
+                <div class="input-with-icon">
+                  <span class="input-icon" aria-hidden="true">🏢</span>
+                  <input class="form-control" type="text" id="reg-company" data-field="company" placeholder="Acme Corp" autocomplete="organization" maxlength="100">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-email">Email Address</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">✉️</span>
+                <input class="form-control" type="email" id="reg-email" data-field="email" placeholder="you@company.com" autocomplete="email" maxlength="120" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-password">Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔒</span>
+                <input class="form-control" type="password" id="reg-password" data-field="password" placeholder="6+ characters, a letter and a number" autocomplete="new-password" maxlength="72" required>
+                <button type="button" class="toggle-password" aria-label="Show password">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-confirm">Confirm Password</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">🔑</span>
+                <input class="form-control" type="password" id="reg-confirm" data-field="confirmPassword" placeholder="Repeat password" autocomplete="new-password" maxlength="72" required>
+              </div>
+            </div>
+            <button type="submit" class="auth-submit-btn" id="registerSubmitBtn">Create Account →</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script th:src="@{/js/common.js}"></script>
+  <script th:src="@{/js/auth.js}"></script>
+</body>
+</html>
